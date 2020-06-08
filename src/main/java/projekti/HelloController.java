@@ -9,6 +9,7 @@ public class HelloController {
     @GetMapping("/")
     public String home() {
         return "index";
+        //return "newuser";
     }
 
 }
