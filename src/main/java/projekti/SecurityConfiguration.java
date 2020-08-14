@@ -30,12 +30,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().sameOrigin();
 
         http.authorizeRequests()
+                .antMatchers("/info").permitAll()
+                .antMatchers("/newaccount").permitAll()
                 .antMatchers("/accounts","/accounts/**").permitAll()
                 .antMatchers("/h2-console","/h2-console/**").permitAll()
                 .anyRequest().authenticated().and()
                 .formLogin().permitAll().and()
                 .logout().permitAll();
+        http.formLogin().defaultSuccessUrl("/start", true);
     }
+    
+    
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

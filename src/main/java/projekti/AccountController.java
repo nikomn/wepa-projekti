@@ -27,15 +27,20 @@ public class AccountController {
         model.addAttribute("accounts", accountRepository.findAll());
         return "accounts";
     }
+    
+    @GetMapping("/newaccount")
+    public String create(Model model) {
+        return "newaccount";
+    }
 
     @PostMapping("/accounts")
     public String add(@RequestParam String username, @RequestParam String password) {
         if (accountRepository.findByUsername(username) != null) {
-            return "redirect:/accounts";
+            return "redirect:/newaccount";
         }
 
         Account a = new Account(username, passwordEncoder.encode(password));
         accountRepository.save(a);
-        return "redirect:/";
+        return "redirect:/info";
     }
 }

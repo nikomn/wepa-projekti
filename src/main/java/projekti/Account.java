@@ -1,5 +1,6 @@
 package projekti;
 
+import java.util.List;
 import javax.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,4 +15,5 @@ public class Account extends AbstractPersistable<Long> {
 
     private String username;
     private String password;
+    
 }
