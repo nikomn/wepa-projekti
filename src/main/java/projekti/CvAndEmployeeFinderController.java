@@ -25,6 +25,11 @@ public class CvAndEmployeeFinderController {
     public String start(Model model) {
         return "start";
     }
+    
+    @GetMapping("/accountcreated")
+    public String accountCreated(Model model) {
+        return "accountcreated";
+    }
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(CvAndEmployeeFinderController.class, args);
