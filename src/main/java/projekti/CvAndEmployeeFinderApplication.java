@@ -9,5 +9,7 @@ public class CvAndEmployeeFinderApplication {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(CvAndEmployeeFinderApplication.class, args);
     }
+    
+    // Käynnistys: mvn spring-boot:run
 
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        
+        <p>Logged in as <span th:text="${username}">username</span> <a th:href="@{/logout}">log out</a></p>
+        <h1>Search results</h1>
+
+        <ul>
+            <li th:each="item: ${results}">
+                <span th:text="${item.username}">Connection </span>
+                <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${item.username})}" th:method="POST">
+                    <input type="submit" value="Add"/>
+                </form>
+<!--                <button name="button"> add to connections</button></li>-->
+            
+            
+        </ul>
+        
+        
+    </body>
+</html>

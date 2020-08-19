@@ -5,11 +5,16 @@
  */
 package projekti;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,6 +33,30 @@ public class AccountController {
         return "accounts";
     }
     
+    @GetMapping("/search")
+    public String searchConnections(Model model, @RequestParam String name) {
+        System.out.println("haetaan: " + name + "...");
+        List<Account> accounts = accountRepository.findAll();
+        List<Account> foundAccounts = new ArrayList<>();
+        for (Account a: accounts) {
+            if (a.getUsername().contains(name)) {
+                System.out.println("Found by id: " + a.getId());
+                foundAccounts.add(a);
+            } else {
+                System.out.println(a.getUsername() + " != " + name);
+            }
+        }
+        
+        model.addAttribute("results", foundAccounts);
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        model.addAttribute("username", username);
+        System.out.println("auth detailssit: " + auth.getDetails());
+        //model.addAttribute("userid", auth.getDetails());
+        return "results";
+    }
+    
     @GetMapping("/newaccount")
     public String create(Model model) {
         return "newaccount";
@@ -42,5 +71,14 @@ public class AccountController {
         Account a = new Account(username, passwordEncoder.encode(password));
         accountRepository.save(a);
         return "redirect:/accountcreated";
+    }
+    
+    @PostMapping("/accounts/{accountId}/{connection}")
+    public String addConnection(Model model, @PathVariable(value = "connection") String connection) {
+        System.out.println("TODO... add user " + connection + " to connections...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        model.addAttribute("username", username);
+        return "redirect:/start";
     }
 }

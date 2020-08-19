@@ -7,9 +7,12 @@ package projekti;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @SpringBootApplication
@@ -23,6 +26,10 @@ public class CvAndEmployeeFinderController {
     
     @GetMapping("/start")
     public String start(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        System.out.println("logged in as: " + username);
+        model.addAttribute("username", username);
         return "start";
     }
     
@@ -31,7 +38,5 @@ public class CvAndEmployeeFinderController {
         return "accountcreated";
     }
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(CvAndEmployeeFinderController.class, args);
-    }
+    
 }
