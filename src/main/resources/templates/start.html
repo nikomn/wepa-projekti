@@ -17,6 +17,17 @@ and open the template in the editor.
         
         <p>Site still under construction...</p>
         
+        <h2>Connections...</h2>
+        
+        <ul>
+            <li th:each="connection: ${connections}">
+                <span th:text="${connection.username}">Connection </span>
+                <span th:text="${connection.accepted}"> accepted</span>
+            </li>
+            
+            
+        </ul>
+        
         <h2>Search for connections</h2>
 
         

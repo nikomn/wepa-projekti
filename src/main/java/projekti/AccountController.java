@@ -23,6 +23,9 @@ public class AccountController {
 
     @Autowired
     AccountRepository accountRepository;
+    
+    @Autowired
+    ConnectionRepository connectionRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -68,17 +71,27 @@ public class AccountController {
             return "redirect:/newaccount";
         }
 
-        Account a = new Account(username, passwordEncoder.encode(password));
+        Account a = new Account(username, passwordEncoder.encode(password), new ArrayList<>());
         accountRepository.save(a);
         return "redirect:/accountcreated";
     }
     
-    @PostMapping("/accounts/{accountId}/{connection}")
-    public String addConnection(Model model, @PathVariable(value = "connection") String connection) {
+    @PostMapping("/accounts/{account}/{connection}")
+    public String addConnection(Model model, @PathVariable(value = "connection") String connection, @PathVariable(value = "account") String account) {
         System.out.println("TODO... add user " + connection + " to connections...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         model.addAttribute("username", username);
+        
+        
+        
+        Account a = accountRepository.findByUsername(account);
+        Account b = accountRepository.findByUsername(connection);
+        Connection c = new Connection(b.getUsername(), true, a);
+        connectionRepository.save(c);
+        Connection c2 = new Connection(a.getUsername(), false, b);
+        connectionRepository.save(c2);
+        
         return "redirect:/start";
     }
 }

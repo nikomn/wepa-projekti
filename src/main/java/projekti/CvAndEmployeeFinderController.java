@@ -5,6 +5,8 @@
  */
 package projekti;
 
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.core.Authentication;
@@ -18,6 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @SpringBootApplication
 @Controller
 public class CvAndEmployeeFinderController {
+    
+    @Autowired
+    AccountRepository accountRepository;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -30,6 +35,15 @@ public class CvAndEmployeeFinderController {
         String username = auth.getName();
         System.out.println("logged in as: " + username);
         model.addAttribute("username", username);
+        Account a = accountRepository.findByUsername(username);
+        System.out.println("a.username = " + a.getUsername());
+        List<Connection> connections = accountRepository.findByUsername(username).getConnections();
+        System.out.println("Connections by user " + username);
+        /*
+        for (Connection c: connections) {
+            System.out.println(c);
+        }*/
+        model.addAttribute("connections", connections);
         return "start";
     }
     
