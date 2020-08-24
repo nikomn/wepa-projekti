@@ -17,7 +17,9 @@ and open the template in the editor.
         
         <p>Site still under construction...</p>
         
-        <h2>Connections...</h2>
+        <h2>Connections</h2>
+        
+        <h3>Connection made</h3>
         
         <ul>
             <li th:each="connection: ${connections}">
@@ -26,6 +28,29 @@ and open the template in the editor.
             </li>
             
             
+        </ul>
+        
+        <h3>Connection asked, but not yet accepted by another connection</h3>
+        
+        <ul>
+            <li th:each="askedconnection: ${askedConnections}">
+                <span th:text="${askedconnection.username}">Connection </span>
+                <span th:text="${askedconnection.accepted}"> accepted</span>
+            </li>
+            
+            
+        </ul>
+        
+        <h3>Connection request received</h3>
+        
+        <ul>
+            <li th:each="receivedconnection: ${receivedConnections}">
+                <span th:text="${receivedconnection.username}">Connection </span>
+                <form th:action="@{/accounts/accept/{accountId}/{connection}(accountId=${username}, connection=${receivedconnection.username})}" th:method="POST">
+                    <input type="submit" value="Accept request"/>
+                </form>
+<!--                <button name="button"> add to connections</button></li>-->
+            </li>
         </ul>
         
         <h2>Search for connections</h2>

@@ -5,6 +5,7 @@
  */
 package projekti;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -23,6 +24,9 @@ public class CvAndEmployeeFinderController {
     
     @Autowired
     AccountRepository accountRepository;
+    
+    @Autowired
+    ConnectionRepository connectionRepository;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -37,13 +41,38 @@ public class CvAndEmployeeFinderController {
         model.addAttribute("username", username);
         Account a = accountRepository.findByUsername(username);
         System.out.println("a.username = " + a.getUsername());
-        List<Connection> connections = accountRepository.findByUsername(username).getConnections();
+//        List<Connection> connections = accountRepository.findByUsername(username).getConnections();
+        List<Connection> connections = new ArrayList<>();
+        accountRepository.findByUsername(username).getConnections().forEach(connections::add);
+//        
+        List<Connection> connectedConections = new ArrayList<>();
+        List<Connection> askedConections = new ArrayList<>();
+        List<Connection> receivedConections = new ArrayList<>();
         System.out.println("Connections by user " + username);
+        connections.forEach((c) -> {
+            Connection newConnection = c;
+            System.out.println("username: " + newConnection.getUsername() 
+                    + ", accepted: " + newConnection.isAccepted() 
+                    + ", asked: " + newConnection.isAsked() 
+                    + ", rejected: " + newConnection.isRejected());
+            if (newConnection.isAccepted()) {
+                connectedConections.add(newConnection);
+            } else if (!newConnection.isAccepted() && newConnection.isAsked() && !newConnection.isRejected()) {
+                askedConections.add(newConnection);
+            } else if (!newConnection.isAccepted() && !newConnection.isAsked()) {
+                System.out.println("Menee ihan oikeaan paikkaan...");
+                receivedConections.add(newConnection);
+            }
+            
+        });
+        
         /*
         for (Connection c: connections) {
             System.out.println(c);
         }*/
-        model.addAttribute("connections", connections);
+        model.addAttribute("connections", connectedConections);
+        model.addAttribute("askedConnections", askedConections);
+        model.addAttribute("receivedConnections", receivedConections);
         return "start";
     }
     

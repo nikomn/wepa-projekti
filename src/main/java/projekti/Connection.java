@@ -17,7 +17,9 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 public class Connection extends AbstractPersistable<Long> {
 
     private String username;
+    private boolean asked;
     private boolean accepted;
+    private boolean rejected;
     
     @ManyToOne
     private Account account;
