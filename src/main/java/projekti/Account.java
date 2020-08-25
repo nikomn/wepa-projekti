@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,5 +23,11 @@ public class Account extends AbstractPersistable<Long> {
     
     @OneToMany(mappedBy = "account")
     private List<Connection> connections = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "owner")
+    private List<FileObject> files = new ArrayList<>();
+    
+    //@OneToOne(mappedBy = "owner")
+    //private FileObject profilepic;
      
 }

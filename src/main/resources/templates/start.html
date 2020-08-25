@@ -17,6 +17,17 @@ and open the template in the editor.
         
         <p>Site still under construction...</p>
         
+        <div th:if="${picId != null}">
+            <img th:src="@{/{account}/files/{picId}/content(account=${username}, picId=${picId})}"/>
+        </div>
+        
+        h2>Add profile image</h2>
+ 
+        <form method="POST" th:action="@{/start/{accountId}/files(accountId=${username})}" enctype="multipart/form-data">
+            <input type="file" name="file" id="file"/>
+            <input type="submit" value="Add!"/>
+        </form>
+        
         <h2>Connections</h2>
         
         <h3>Connection made</h3>
