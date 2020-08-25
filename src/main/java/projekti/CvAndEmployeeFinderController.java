@@ -8,6 +8,7 @@ package projekti;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -40,6 +41,7 @@ public class CvAndEmployeeFinderController {
         return "info";
     }
 
+    @Transactional
     @GetMapping("/start")
     public String start(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
