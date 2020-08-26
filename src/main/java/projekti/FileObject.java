@@ -26,8 +26,15 @@ public class FileObject extends AbstractPersistable<Long> {
     private String contentType;
     private Long contentLength;
 
+    
+    // Toimii lokaalisti, mutta EI herokussa
+    //
     //@Lob
     //@Basic(fetch = FetchType.LAZY)
+    //@NotEmpty
+    //private byte[] content;
+    
+    
     @Type(type = "org.hibernate.type.BinaryType")
     private byte[] content;
     

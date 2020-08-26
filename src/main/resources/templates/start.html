@@ -17,16 +17,29 @@ and open the template in the editor.
         
         <p>Site still under construction...</p>
         
+        <h2>Profile of user <span th:text="${username}">username</span></h2>
+        
         <div th:if="${picId != null}">
             <img th:src="@{/{account}/files/{picId}/content(account=${username}, picId=${picId})}"/>
+            <p>Change profile image</p>
+ 
+            <form method="POST" th:action="@{/start/{accountId}/files(accountId=${username})}" enctype="multipart/form-data">
+                <input type="file" name="file" id="file"/>
+                <input type="submit" value="Change!"/>
+            </form>
         </div>
         
-        h2>Add profile image</h2>
+        <div th:if="${picId == null}">
+            <p>Add profile image</p>
  
-        <form method="POST" th:action="@{/start/{accountId}/files(accountId=${username})}" enctype="multipart/form-data">
-            <input type="file" name="file" id="file"/>
-            <input type="submit" value="Add!"/>
-        </form>
+            <form method="POST" th:action="@{/start/{accountId}/files(accountId=${username})}" enctype="multipart/form-data">
+                <input type="file" name="file" id="file"/>
+                <input type="submit" value="Add!"/>
+            </form>
+        </div>
+        
+        
+        
         
         <h2>Connections</h2>
         
@@ -35,7 +48,10 @@ and open the template in the editor.
         <ul>
             <li th:each="connection: ${connections}">
                 <span th:text="${connection.username}">Connection </span>
-                <span th:text="${connection.accepted}"> accepted</span>
+                
+                <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${connection.username})}" th:method="DELETE">
+                    <input type="submit" value="delete"/>
+                </form>
             </li>
             
             
@@ -46,7 +62,9 @@ and open the template in the editor.
         <ul>
             <li th:each="askedconnection: ${askedConnections}">
                 <span th:text="${askedconnection.username}">Connection </span>
-                <span th:text="${askedconnection.accepted}"> accepted</span>
+                <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${askedconnection.username})}" th:method="DELETE">
+                    <input type="submit" value="delete"/>
+                </form>
             </li>
             
             
@@ -60,6 +78,10 @@ and open the template in the editor.
                 <form th:action="@{/accounts/accept/{accountId}/{connection}(accountId=${username}, connection=${receivedconnection.username})}" th:method="POST">
                     <input type="submit" value="Accept request"/>
                 </form>
+                <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${receivedconnection.username})}" th:method="DELETE">
+                    <input type="submit" value="delete"/>
+                </form>
+                
 <!--                <button name="button"> add to connections</button></li>-->
             </li>
         </ul>
