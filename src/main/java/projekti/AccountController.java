@@ -40,25 +40,52 @@ public class AccountController {
 
     @GetMapping("/search")
     public String searchConnections(Model model, @RequestParam String name) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        model.addAttribute("username", username);
+        //System.out.println("auth detailssit: " + auth.getDetails());
+        
         System.out.println("haetaan: " + name + "...");
         List<Account> accounts = accountRepository.findAll();
-        List<Account> foundAccounts = new ArrayList<>();
+        List<Connection> connections = new ArrayList<>();
+        accountRepository.findByUsername(username).getConnections().forEach(connections::add);
+        List<Account> foundNewAccounts = new ArrayList<>();
+        List<Account> foundConnectedAccounts = new ArrayList<>();
         for (Account a : accounts) {
             if (a.getUsername().contains(name)) {
                 System.out.println("Found by id: " + a.getId());
-                foundAccounts.add(a);
+                //Account foundAcount = a;
+                foundNewAccounts.add(a);
             } else {
                 System.out.println(a.getUsername() + " != " + name);
             }
         }
+        
+        // Ugh... todo... fixaa myöhemmin, jos ehtii...
+        List<Account> oldAccounts = new ArrayList<>();
+        List<Account> newAccounts = new ArrayList<>();
+        for (Account a : foundNewAccounts) {
+            boolean isNew = true;
+            for (Connection c : connections) {
+                String u = c.getUsername();
+                if (a.getUsername().equals(u)) {
+                    isNew = false;
+                } else {
+                }
+            }
+            if (isNew) {
+                newAccounts.add(a);
+            } else {
+                oldAccounts.add(a);
+            }
+        }
 
-        model.addAttribute("results", foundAccounts);
+        model.addAttribute("found", newAccounts);
+        model.addAttribute("foundconnected", oldAccounts);
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        model.addAttribute("username", username);
-        System.out.println("auth detailssit: " + auth.getDetails());
+        
         //model.addAttribute("userid", auth.getDetails());
+        
         return "results";
     }
 
