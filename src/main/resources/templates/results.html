@@ -18,14 +18,14 @@ and open the template in the editor.
 
         <ul>
             <li th:each="item: ${found}">
-                <span th:text="${item.username}">Connection </span>
+                <a th:href="@{/users/{username}(username=${item.username})}"><span th:text="${item.username}">Connection </span></a>
                 <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${item.username})}" th:method="POST">
                     <input type="submit" value="Add"/>
                 </form>
 <!--                <button name="button"> add to connections</button></li>-->
             </li>
             <li th:each="connection: ${foundconnected}">
-                <span th:text="${connection.username}">Connection </span>
+                <a th:href="@{/users/{username}(username=${connection.username})}"><span th:text="${connection.username}">Connection </span></a>
                 <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${connection.username})}" th:method="DELETE">
                     <input type="submit" value="delete"/>
                 </form>

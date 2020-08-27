@@ -7,6 +7,7 @@ package projekti;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,10 @@ public class AccountController {
 
     @Autowired
     ConnectionRepository connectionRepository;
+    
+    @Autowired
+    SkillRepository skillRepository;
+    
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -52,7 +57,7 @@ public class AccountController {
         List<Account> foundNewAccounts = new ArrayList<>();
         List<Account> foundConnectedAccounts = new ArrayList<>();
         for (Account a : accounts) {
-            if (a.getUsername().contains(name)) {
+            if (a.getUsername().contains(name) && !a.getUsername().equals(username)) {
                 System.out.println("Found by id: " + a.getId());
                 //Account foundAcount = a;
                 foundNewAccounts.add(a);
@@ -100,7 +105,7 @@ public class AccountController {
             return "redirect:/newaccount";
         }
 
-        Account a = new Account(username, passwordEncoder.encode(password), new ArrayList<>(), new ArrayList<>());
+        Account a = new Account(username, passwordEncoder.encode(password), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         //Account a = new Account(username, passwordEncoder.encode(password), new ArrayList<>(), new FileObject());
         accountRepository.save(a);
         return "redirect:/accountcreated";
@@ -160,6 +165,46 @@ public class AccountController {
         accountRepository.findByUsername(b.getUsername()).getConnections().forEach(connectionsOfB::add);
 
         return "redirect:/start";
+    }
+    
+    @Transactional
+    @PostMapping("/accounts/{account}/skills")
+    public String addSkill(@RequestParam String skill, @PathVariable(value = "account") String account) {
+        Account a = accountRepository.findByUsername(account);
+        Skill s = new Skill(skill, 0, a);
+        skillRepository.save(s);
+        
+        return "redirect:/start";
+    }
+    
+    @Transactional
+    @PostMapping("/accounts/{account}/skills/{id}")
+    public String likeSkill(@PathVariable(value = "account") String account, @PathVariable(value = "id") String skillId) {
+        Account a = accountRepository.findByUsername(account);
+        //System.out.println("skillID: " + skillId);
+        Long id = Long.parseLong(skillId);
+        //System.out.println("skillID: " + id);
+        Skill likedSkill = skillRepository.getOne(id);
+        //Skill likedSkillb = skillRepository.getOne(id);
+        System.out.println("likedSkill: " + likedSkill.getName());
+        //System.out.println("likedSkill: " + likedSkillb.getName());
+//        List<Skill> allSkills = new ArrayList<>();
+//        accountRepository.findByUsername(account).getSkills().forEach(allSkills::add);
+        //Skill likedSkill = skillRepository.findByNameAndPosessor(skill, a);
+        //Optional<Skill> findById = skillRepository.findById(id);
+        //System.out.println("findById: " + findById.get());
+//        for (int i = 0; i < allSkills.size(); i++) {
+//            Skill s = allSkills.get(i);
+//            if (s.getName().equals(skill)) {
+//                likedSkill = s;
+//                break;
+//            }
+//        }
+        
+        likedSkill.setLikes(likedSkill.getLikes() + 1);
+        skillRepository.save(likedSkill);
+        
+        return "redirect:/users/{account}";
     }
     
     @Transactional

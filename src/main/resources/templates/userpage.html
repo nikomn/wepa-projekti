@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Cv And Employee Finder Application</h1>
+        <p>Logged in as <span th:text="${username}">username</span> <a th:href="@{/logout}">log out</a></p>
+        <p><a th:href="@{/start}">back to start page</a></p>
+        
+        <h2>Profile of user <span th:text="${userpage}">username</span></h2>
+        
+        <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${userpage})}" th:method="POST">
+            <input type="submit" value="Add user to your connections"/>
+        </form>
+        
+        <div th:if="${picId != null}">
+            <img th:src="@{/{account}/files/{picId}/content(account=${username}, picId=${picId})}"/>
+        </div>
+        
+        <h2>Connections</h2>
+        
+        <ul>
+            <li th:each="connection: ${connections}">
+                <a th:href="@{/users/{username}(username=${connection.username})}"><span th:text="${connection.username}">Connection </span></a>
+                
+                <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${connection.username})}" th:method="POST">
+                    <input type="submit" value="Add"/>
+                </form>
+            </li>
+            
+        </ul>
+        
+        <h2>Skills</h2>
+        
+        <h3>Top 3 skills</h3>
+        <ol>
+            <li th:each="skill: ${topSkills}">
+                <strong><span th:text="${skill.name}">Skill</span> (id <span th:text="${skill.id}">id</span>) (<span th:text="${skill.likes}">like</span> likes)</strong>
+                
+                <form th:action="@{/accounts/{account}/skills/{id}(account=${userpage}, id=${skill.id})}" th:method="POST">
+                    <input type="submit" value="like"/>
+                </form>
+            </li>
+            
+            
+        </ol>
+        
+        <h3>Other skills</h3>
+        
+        <ul>
+            <li th:each="skill: ${otherSkills}">
+                <span th:text="${skill.name}">Skill</span> (<span th:text="${skill.likes}">like</span> likes)
+                
+<!--                <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${connection.username})}" th:method="DELETE">
+                    <input type="submit" value="delete"/>
+                </form>-->
+            </li>
+            
+            
+        </ul>
+        
+        
+    </body>
+</html>

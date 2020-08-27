@@ -7,6 +7,7 @@ package projekti;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,79 @@ public class CvAndEmployeeFinderController {
     @GetMapping("/")
     public String home(Model model) {
         return "info";
+    }
+    
+    
+    @GetMapping("/users/{account}")
+    public String userpage(Model model, @PathVariable(value = "account") String account) {
+        Account a = accountRepository.findByUsername(account);
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        System.out.println("logged in as: " + username);
+        model.addAttribute("username", username);
+        
+        model.addAttribute("userpage", account);
+        
+        
+        List<Connection> connections = new ArrayList<>();
+        accountRepository.findByUsername(username).getConnections().forEach(connections::add);
+        
+        List<Connection> connectedConections = new ArrayList<>();
+        List<Connection> askedConections = new ArrayList<>();
+        List<Connection> receivedConections = new ArrayList<>();
+        System.out.println("Connections by user " + username);
+        connections.forEach((c) -> {
+            Connection newConnection = c;
+            System.out.println("username: " + newConnection.getUsername()
+                    + ", accepted: " + newConnection.isAccepted()
+                    + ", asked: " + newConnection.isAsked()
+                    + ", rejected: " + newConnection.isRejected());
+            if (newConnection.isAccepted()) {
+                connectedConections.add(newConnection);
+            } else if (!newConnection.isAccepted() && newConnection.isAsked() && !newConnection.isRejected()) {
+                askedConections.add(newConnection);
+            } else if (!newConnection.isAccepted() && !newConnection.isAsked()) {
+                receivedConections.add(newConnection);
+            }
+
+        });
+
+        model.addAttribute("connections", connectedConections);
+//        model.addAttribute("askedConnections", askedConections);
+//        model.addAttribute("receivedConnections", receivedConections);
+
+        List<Skill> allSkills = new ArrayList<>();
+        accountRepository.findByUsername(username).getSkills().forEach(allSkills::add);
+
+        
+        allSkills.sort((o1, o2) -> o2.getLikes().compareTo(o1.getLikes()));
+        
+        List<Skill> topSkills = new ArrayList<>();
+        List<Skill> otherSkills = new ArrayList<>();
+        for (int i = 0; i < allSkills.size(); i++) {
+            if (i < 3) {
+                topSkills.add(allSkills.get(i));
+            } else {
+                otherSkills.add(allSkills.get(i));
+            }
+        }
+
+        model.addAttribute("topSkills", topSkills);
+        model.addAttribute("otherSkills", otherSkills);
+
+        List<FileObject> fiilit = new ArrayList<>();
+        accountRepository.findByUsername(account).getFiles().forEach(fiilit::add);
+        fiilit.forEach((f) -> {
+            FileObject newFile = f;
+            System.out.println("filename: " + newFile.getName());
+            System.out.println("id: " + newFile.getId());
+        });
+        if (fiilit.size() > 0) {
+            model.addAttribute("picId", fiilit.get(0).getId());
+        }
+        
+        return "userpage";
     }
 
     @Transactional
@@ -75,11 +149,36 @@ public class CvAndEmployeeFinderController {
 
         });
 
-        
         model.addAttribute("connections", connectedConections);
         model.addAttribute("askedConnections", askedConections);
         model.addAttribute("receivedConnections", receivedConections);
+
+        List<Skill> allSkills = new ArrayList<>();
+        accountRepository.findByUsername(username).getSkills().forEach(allSkills::add);
+ 
+//        List<Skill> allSkillsAsNormalList = new ArrayList<>();
+//        allSkills.forEach((s) -> {
+//            Skill x = s;
+//            allSkillsAsNormalList.add(x);
+//        });
         
+        allSkills.sort((o1, o2) -> o2.getLikes().compareTo(o1.getLikes()));
+        
+        List<Skill> topSkills = new ArrayList<>();
+        List<Skill> otherSkills = new ArrayList<>();
+        int index = 0;
+        for (int i = 0; i < allSkills.size(); i++) {
+            if (i < 3) {
+                topSkills.add(allSkills.get(i));
+            } else {
+                otherSkills.add(allSkills.get(i));
+            }
+        }
+
+        //model.addAttribute("skills", accountRepository.findByUsername(username).getSkills());
+        model.addAttribute("topSkills", topSkills);
+        model.addAttribute("otherSkills", otherSkills);
+
         List<FileObject> fiilit = new ArrayList<>();
         accountRepository.findByUsername(username).getFiles().forEach(fiilit::add);
         //fileRepository.findAll().forEach(fiilit::add);
@@ -90,8 +189,8 @@ public class CvAndEmployeeFinderController {
         });
         if (fiilit.size() > 0) {
             model.addAttribute("picId", fiilit.get(0).getId());
-        } 
-        
+        }
+
         return "start";
     }
 
@@ -134,7 +233,6 @@ public class CvAndEmployeeFinderController {
         } else {
             System.out.println("Only gif and png allowed at this point...");
         }
-        
 
         return "redirect:/start";
     }

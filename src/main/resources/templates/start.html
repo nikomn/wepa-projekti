@@ -47,7 +47,7 @@ and open the template in the editor.
         
         <ul>
             <li th:each="connection: ${connections}">
-                <span th:text="${connection.username}">Connection </span>
+                <a th:href="@{/users/{username}(username=${connection.username})}"><span th:text="${connection.username}">Connection </span></a>
                 
                 <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${connection.username})}" th:method="DELETE">
                     <input type="submit" value="delete"/>
@@ -61,7 +61,7 @@ and open the template in the editor.
         
         <ul>
             <li th:each="askedconnection: ${askedConnections}">
-                <span th:text="${askedconnection.username}">Connection </span>
+                <a th:href="@{/users/{username}(username=${askedconnection.username})}"><span th:text="${askedconnection.username}">Connection </span></a>
                 <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${askedconnection.username})}" th:method="DELETE">
                     <input type="submit" value="delete"/>
                 </form>
@@ -74,7 +74,7 @@ and open the template in the editor.
         
         <ul>
             <li th:each="receivedconnection: ${receivedConnections}">
-                <span th:text="${receivedconnection.username}">Connection </span>
+                <a th:href="@{/users/{username}(username=${receivedconnection.username})}"><span th:text="${receivedconnection.username}">Connection </span></a>
                 <form th:action="@{/accounts/accept/{accountId}/{connection}(accountId=${username}, connection=${receivedconnection.username})}" th:method="POST">
                     <input type="submit" value="Accept request"/>
                 </form>
@@ -93,6 +93,44 @@ and open the template in the editor.
             <form th:action="@{/search}" method="GET">
                 <input type="text" name="name"/>
                 <input type="submit" value="Search"/>
+            </form>
+        </div>
+        
+        <h2>Skills</h2>
+        
+        <h3>Top 3 skills</h3>
+        <ol>
+            <li th:each="skill: ${topSkills}">
+                <strong><span th:text="${skill.name}">Skill</span> (<span th:text="${skill.likes}">like</span> likes)</strong>
+                
+<!--                <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${connection.username})}" th:method="DELETE">
+                    <input type="submit" value="delete"/>
+                </form>-->
+            </li>
+            
+            
+        </ol>
+        
+        <h3>Other skills</h3>
+        
+        <ul>
+            <li th:each="skill: ${otherSkills}">
+                <span th:text="${skill.name}">Skill</span> (<span th:text="${skill.likes}">like</span> likes)
+                
+<!--                <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${connection.username})}" th:method="DELETE">
+                    <input type="submit" value="delete"/>
+                </form>-->
+            </li>
+            
+            
+        </ul>
+        
+        <h3>Add new skill</h3>
+        
+        <div>
+            <form th:action="@{/accounts/{accountId}/skills(accountId=${username})}" method="POST">
+                <input type="text" name="skill"/>
+                <input type="submit" value="Add skill"/>
             </form>
         </div>
         

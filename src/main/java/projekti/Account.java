@@ -27,6 +27,9 @@ public class Account extends AbstractPersistable<Long> {
     @OneToMany(mappedBy = "owner")
     private List<FileObject> files = new ArrayList<>();
     
+    @OneToMany(mappedBy = "posessor")
+    private List<Skill> skills = new ArrayList<>();
+    
     //@OneToOne(mappedBy = "owner")
     //private FileObject profilepic;
      
