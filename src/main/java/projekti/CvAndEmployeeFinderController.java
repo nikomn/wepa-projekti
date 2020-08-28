@@ -46,7 +46,7 @@ public class CvAndEmployeeFinderController {
     @GetMapping("/users/{account}")
     public String userpage(Model model, @PathVariable(value = "account") String account) {
         Account a = accountRepository.findByUsername(account);
-        
+        //boolean isConnected = false;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         System.out.println("logged in as: " + username);
@@ -56,14 +56,18 @@ public class CvAndEmployeeFinderController {
         
         
         List<Connection> connections = new ArrayList<>();
-        accountRepository.findByUsername(username).getConnections().forEach(connections::add);
+        accountRepository.findByUsername(account).getConnections().forEach(connections::add);
         
         List<Connection> connectedConections = new ArrayList<>();
         List<Connection> askedConections = new ArrayList<>();
         List<Connection> receivedConections = new ArrayList<>();
-        System.out.println("Connections by user " + username);
+        System.out.println("Connections by user " + account);
         connections.forEach((c) -> {
             Connection newConnection = c;
+            if (newConnection.getUsername().equals(username)) {
+                //System.out.println("If lause...");
+                model.addAttribute("connectionPendingOrDone", true);
+            }
             System.out.println("username: " + newConnection.getUsername()
                     + ", accepted: " + newConnection.isAccepted()
                     + ", asked: " + newConnection.isAsked()
@@ -83,7 +87,7 @@ public class CvAndEmployeeFinderController {
 //        model.addAttribute("receivedConnections", receivedConections);
 
         List<Skill> allSkills = new ArrayList<>();
-        accountRepository.findByUsername(username).getSkills().forEach(allSkills::add);
+        accountRepository.findByUsername(account).getSkills().forEach(allSkills::add);
 
         
         allSkills.sort((o1, o2) -> o2.getLikes().compareTo(o1.getLikes()));

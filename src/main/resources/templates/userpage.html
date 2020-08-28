@@ -17,9 +17,12 @@ and open the template in the editor.
         
         <h2>Profile of user <span th:text="${userpage}">username</span></h2>
         
-        <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${userpage})}" th:method="POST">
+        <div th:if="${connectionPendingOrDone == null}">
+            <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${userpage})}" th:method="POST">
             <input type="submit" value="Add user to your connections"/>
         </form>
+        </div>
+        
         
         <div th:if="${picId != null}">
             <img th:src="@{/{account}/files/{picId}/content(account=${username}, picId=${picId})}"/>
