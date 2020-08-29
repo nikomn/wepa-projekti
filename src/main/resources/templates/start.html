@@ -17,6 +17,10 @@ and open the template in the editor.
         
         <p>Site still under construction...</p>
         
+        <h2>The wall</h2>
+        
+        <p>Users can add post for other users att <a th:href="@{/wall}">the wall.</a></p>
+        
         <h2>Profile of user <span th:text="${username}">username</span></h2>
         
         <div th:if="${picId != null}">
