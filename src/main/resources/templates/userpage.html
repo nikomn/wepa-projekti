@@ -46,7 +46,7 @@ and open the template in the editor.
         <h3>Top 3 skills</h3>
         <ol>
             <li th:each="skill: ${topSkills}">
-                <strong><span th:text="${skill.name}">Skill</span> (id <span th:text="${skill.id}">id</span>) (<span th:text="${skill.likes}">like</span> likes)</strong>
+                <strong><span th:text="${skill.name}">Skill</span> (<span th:text="${skill.likes}">like</span> likes)</strong>
                 
                 <form th:action="@{/accounts/{account}/skills/{id}(account=${userpage}, id=${skill.id})}" th:method="POST">
                     <input type="submit" value="like"/>
@@ -61,10 +61,11 @@ and open the template in the editor.
         <ul>
             <li th:each="skill: ${otherSkills}">
                 <span th:text="${skill.name}">Skill</span> (<span th:text="${skill.likes}">like</span> likes)
-                
-<!--                <form th:action="@{/accounts/{accountId}/{connection}(accountId=${username}, connection=${connection.username})}" th:method="DELETE">
-                    <input type="submit" value="delete"/>
-                </form>-->
+
+            <form th:action="@{/accounts/{account}/skills/{id}(account=${userpage}, id=${skill.id})}" th:method="POST">
+                    <input type="submit" value="like"/>
+                </form>
+
             </li>
             
             

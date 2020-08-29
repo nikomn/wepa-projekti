@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @SpringBootApplication
 @Controller
@@ -36,10 +39,75 @@ public class CvAndEmployeeFinderController {
 
     @Autowired
     private FileRepository fileRepository;
+    
+    @Autowired
+    private PostRepository postRepository;
 
     @GetMapping("/")
     public String home(Model model) {
         return "info";
+    }
+    
+    @GetMapping("/wall")
+    public String wall(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("date").descending());
+        model.addAttribute("username", username);
+        
+        
+//        List<Connection> connections = new ArrayList<>();
+//        accountRepository.findByUsername(username).getConnections().forEach(connections::add);
+//        
+//        List<Post> allPosts = new ArrayList<>();
+//        postRepository.findAll().forEach(allPosts::add);
+//        
+//        List<Post> postsByConections = new ArrayList<>();
+//        for (Account a : foundNewAccounts) {
+//        }
+//        List<Account> oldAccounts = new ArrayList<>();
+//        List<Account> newAccounts = new ArrayList<>();
+//        for (Account a : foundNewAccounts) {
+//            boolean isNew = true;
+//            for (Connection c : connections) {
+//                String u = c.getUsername();
+//                if (a.getUsername().equals(u)) {
+//                    isNew = false;
+//                } else {
+//                }
+//            }
+//            if (isNew) {
+//                newAccounts.add(a);
+//            } else {
+//                oldAccounts.add(a);
+//            }
+//        }
+//        allPosts.forEach((p) -> {
+//            Post newPost = p;
+//            if (newConnection.getUsername().equals(username)) {
+//                //System.out.println("If lause...");
+//                model.addAttribute("connectionPendingOrDone", true);
+//            }
+//            System.out.println("username: " + newConnection.getUsername()
+//                    + ", accepted: " + newConnection.isAccepted()
+//                    + ", asked: " + newConnection.isAsked()
+//                    + ", rejected: " + newConnection.isRejected());
+//            if (newConnection.isAccepted()) {
+//                connectedConections.add(newConnection);
+//            } else if (!newConnection.isAccepted() && newConnection.isAsked() && !newConnection.isRejected()) {
+//                askedConections.add(newConnection);
+//            } else if (!newConnection.isAccepted() && !newConnection.isAsked()) {
+//                receivedConections.add(newConnection);
+//            }
+//
+//        });
+        
+        
+        
+        
+        
+        model.addAttribute("posts", postRepository.findAll(pageable));
+        return "wall";
     }
     
     
