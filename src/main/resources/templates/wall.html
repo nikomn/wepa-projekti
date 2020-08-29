@@ -16,6 +16,23 @@ and open the template in the editor.
         <p>Logged in as <span th:text="${username}">username</span> <a th:href="@{/logout}">log out</a></p>
         <p><a th:href="@{/start}">back to start page</a></p>
         
+        
+        
+<!--        <h2>Testing...</h2>
+        
+        <div th:if="${testinki.contains('aaa')}">
+            aaa found!
+        
+        </div>
+        -->
+<!--        <ol>
+            <li th:each="userslikes: ${test}">
+                <span th:text="${test.likedpost.content}">post</span>
+            </li>
+        </ol>-->
+        
+        
+        
         <h2>Add new post</h2>
         
         <div>
@@ -33,10 +50,17 @@ and open the template in the editor.
                 <div><i>by <span th:text="${post.op.username}">user</span>
                         at <span th:text="${post.date}">date</span></div> 
                 <div><span th:text="${post.likes}">like</span> likes</i></div>
+                <div th:if="${userslikes.contains(post.id)}">
+                    <strong>You like this post</strong>
+                </div>
                 
-                <form th:action="@{/posts/{id}/like(id=${post.id})}" th:method="POST">
+                <div th:unless="${userslikes.contains(post.id)}">
+                    <form th:action="@{/posts/{id}/like/{account}(id=${post.id}, account=${username})}" th:method="POST">
                     <input type="submit" value="like"/>
-                </form>
+                    </form>
+                </div>
+                
+                
                 <div>
                     <form th:action="@{/posts/{id}/comments(id=${post.id})}" method="POST">
                         <input type="text" name="comment"/>
@@ -45,9 +69,11 @@ and open the template in the editor.
                 </div>
                     <div><strong>Comments:</strong></div>
                 <ul>
-                    <li th:each="comment: ${post.comments}">
-                        <span th:text="${comment.content}">comment</span>
+                    <span th:each="comment, iterStat: ${post.comments}">
+                    <li th:if="${iterStat.index < 10}">
+                            <span th:text="${comment.content}">comment</span>
                     </li>
+                    </span>
                 </ul>
             </li>
             

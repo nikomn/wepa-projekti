@@ -7,6 +7,7 @@ package projekti;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -39,7 +40,7 @@ public class CvAndEmployeeFinderController {
 
     @Autowired
     private FileRepository fileRepository;
-    
+
     @Autowired
     private PostRepository postRepository;
 
@@ -47,15 +48,87 @@ public class CvAndEmployeeFinderController {
     public String home(Model model) {
         return "info";
     }
-    
+
     @GetMapping("/wall")
     public String wall(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("date").descending());
+        Pageable pageable = PageRequest.of(0, 25, Sort.by("date").descending());
         model.addAttribute("username", username);
+
+        // "Postaussivulla näkyy yhteydessä olevien henkilöiden postaukset." ???
+        List<Connection> connections = new ArrayList<>();
+        accountRepository.findByUsername(username).getConnections().forEach(connections::add);
+        List<Connection> connectedConections = new ArrayList<>();
+        connections.forEach((c) -> {
+            Connection newConnection = c;
+            if (newConnection.isAccepted()) {
+                connectedConections.add(newConnection);
+            }
+        });
+
+        List<Post> connectedPosts = new ArrayList<>();
+        List<Post> allPosts = new ArrayList<>();
+        postRepository.findAll().forEach(allPosts::add);
+        int index = 0;
+        for (Post p : allPosts) {
+            if (index == 25) {
+                break;
+            }
+            if (p.getOp().getUsername().equals(username)) {
+                List<Comment> postComments = p.getComments();
+                if (postComments.size() > 0) {
+                    postComments.sort((c1, c2) -> c2.getId().compareTo(c1.getId()));
+                }
+                p.setComments(postComments);
+                connectedPosts.add(p);
+                index++;
+            }
+            for (Connection c : connectedConections) {
+                if (c.getUsername().equals(p.getOp().getUsername())) {
+                    List<Comment> postComments = p.getComments();
+                    if (postComments.size() > 0) {
+                        postComments.sort((c1, c2) -> c2.getId().compareTo(c1.getId()));
+                    }
+                    p.setComments(postComments);
+                    connectedPosts.add(p);
+                    index++;
+                }
+            }
+
+        }
+
+        model.addAttribute("test", connectedPosts);
+        connectedPosts.sort((p1, p2) -> p2.getDate().compareTo(p1.getDate()));
+        model.addAttribute("posts", connectedPosts);
+
+        // Kukin käyttäjä voi tykätä tietystä viestistä korkeintaan kerran 
+        // (sama käyttäjä ei saa lisätä useampaa tykkäystä tiettyyn viestiin).
         
+        List<Fancy> userslikes = new ArrayList<>();
+        accountRepository.findByUsername(username).getLikes().forEach(userslikes::add);
         
+        List<Long> idlist = new ArrayList<>();
+        System.out.println("Userin liket...");
+        for (Fancy l : userslikes) {
+            Fancy printableLike = l;
+            System.out.println(printableLike.getLikedpost().getContent());
+            System.out.println(printableLike.getLikedpost().getId());
+            idlist.add(printableLike.getLikedpost().getId());
+        }
+        
+        model.addAttribute("userslikes", idlist);
+
+
+        //List<Like> likes = new ArrayList<>();
+        //accountRepository.findByUsername(username).getLikes().forEach(likes::add);
+        List<String> testinki = new ArrayList<>();
+        testinki.add("aaa");
+        model.addAttribute("testinki", testinki);
+
+//        Account a = accountRepository.findByUsername(username);
+        //Collection<Post> testi = postRepository.findByOp(a);
+        //model.addAttribute("testi", testi);
 //        List<Connection> connections = new ArrayList<>();
 //        accountRepository.findByUsername(username).getConnections().forEach(connections::add);
 //        
@@ -101,16 +174,10 @@ public class CvAndEmployeeFinderController {
 //            }
 //
 //        });
-        
-        
-        
-        
-        
-        model.addAttribute("posts", postRepository.findAll(pageable));
+        //model.addAttribute("posts", postRepository.findAll(pageable));
         return "wall";
     }
-    
-    
+
     @GetMapping("/users/{account}")
     public String userpage(Model model, @PathVariable(value = "account") String account) {
         Account a = accountRepository.findByUsername(account);
@@ -119,13 +186,12 @@ public class CvAndEmployeeFinderController {
         String username = auth.getName();
         System.out.println("logged in as: " + username);
         model.addAttribute("username", username);
-        
+
         model.addAttribute("userpage", account);
-        
-        
+
         List<Connection> connections = new ArrayList<>();
         accountRepository.findByUsername(account).getConnections().forEach(connections::add);
-        
+
         List<Connection> connectedConections = new ArrayList<>();
         List<Connection> askedConections = new ArrayList<>();
         List<Connection> receivedConections = new ArrayList<>();
@@ -157,9 +223,8 @@ public class CvAndEmployeeFinderController {
         List<Skill> allSkills = new ArrayList<>();
         accountRepository.findByUsername(account).getSkills().forEach(allSkills::add);
 
-        
         allSkills.sort((o1, o2) -> o2.getLikes().compareTo(o1.getLikes()));
-        
+
         List<Skill> topSkills = new ArrayList<>();
         List<Skill> otherSkills = new ArrayList<>();
         for (int i = 0; i < allSkills.size(); i++) {
@@ -183,7 +248,7 @@ public class CvAndEmployeeFinderController {
         if (fiilit.size() > 0) {
             model.addAttribute("picId", fiilit.get(0).getId());
         }
-        
+
         return "userpage";
     }
 
@@ -227,15 +292,14 @@ public class CvAndEmployeeFinderController {
 
         List<Skill> allSkills = new ArrayList<>();
         accountRepository.findByUsername(username).getSkills().forEach(allSkills::add);
- 
+
 //        List<Skill> allSkillsAsNormalList = new ArrayList<>();
 //        allSkills.forEach((s) -> {
 //            Skill x = s;
 //            allSkillsAsNormalList.add(x);
 //        });
-        
         allSkills.sort((o1, o2) -> o2.getLikes().compareTo(o1.getLikes()));
-        
+
         List<Skill> topSkills = new ArrayList<>();
         List<Skill> otherSkills = new ArrayList<>();
         int index = 0;

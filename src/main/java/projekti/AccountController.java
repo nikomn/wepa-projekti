@@ -107,7 +107,7 @@ public class AccountController {
 
         Account a = new Account(username, passwordEncoder.encode(password)
                 , new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
-                , new ArrayList<>());
+                , new ArrayList<>(), new ArrayList<>());
         //Account a = new Account(username, passwordEncoder.encode(password), new ArrayList<>(), new FileObject());
         accountRepository.save(a);
         return "redirect:/accountcreated";

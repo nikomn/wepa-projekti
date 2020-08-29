@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface FancyRepository extends JpaRepository<Fancy, Long> {
     //Collection<Post> findByOp(Account op);
 
 }

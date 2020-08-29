@@ -24,50 +24,56 @@ import java.time.LocalDateTime;
 
 @Controller
 public class PostController {
-    
+
     @Autowired
     AccountRepository accountRepository;
 
     @Autowired
     ConnectionRepository connectionRepository;
-    
+
     @Autowired
     PostRepository postRepository;
-    
+
     @Autowired
     CommentRepository commentRepository;
-    
+
+    @Autowired
+    FancyRepository likeRepository;
+
     @Transactional
     @PostMapping("/accounts/{account}/posts")
     public String addPost(@RequestParam String posting, @PathVariable(value = "account") String account) {
         Account a = accountRepository.findByUsername(account);
-        Post p = new Post(posting, 0, LocalDateTime.now(), a, new ArrayList<>());
+        Post p = new Post(posting, 0, LocalDateTime.now(), a,
+                new ArrayList<>(), new ArrayList<>());
         postRepository.save(p);
-        
+
         return "redirect:/wall";
     }
-    
-    
+
     @Transactional
     @PostMapping("/posts/{id}/comments")
     public String addComment(@RequestParam String comment, @PathVariable Long id) {
-        
+
         Post p = postRepository.getOne(id);
         Comment c = new Comment(comment, p);
         commentRepository.save(c);
-        
+
         return "redirect:/wall";
     }
-    
+
     @Transactional
-    @PostMapping("/posts/{id}/like")
-    public String likeSkill(@PathVariable Long id) {
+    @PostMapping("/posts/{id}/like/{account}")
+    public String likePost(@PathVariable Long id, @PathVariable(value = "account") String account) {
         Post p = postRepository.getOne(id);
+        Account a = accountRepository.findByUsername(account);
         p.setLikes(p.getLikes() + 1);
-        
+        Fancy l = new Fancy(p, a);
+
         postRepository.save(p);
-        
+        likeRepository.save(l);
+
         return "redirect:/wall";
     }
-    
+
 }

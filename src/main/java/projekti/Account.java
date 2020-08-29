@@ -33,6 +33,10 @@ public class Account extends AbstractPersistable<Long> {
     @OneToMany(mappedBy = "op")
     private List<Post> posts = new ArrayList<>();
     
+    @OneToMany(mappedBy = "liker")
+    private List<Fancy> likes = new ArrayList<>();
+    
+    
 //    @OneToMany(mappedBy = "commenter")
 //    private List<Comment> comments = new ArrayList<>();
 //    

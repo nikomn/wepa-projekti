@@ -5,7 +5,6 @@
  */
 package projekti;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -15,30 +14,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.AbstractPersistable;
-import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post extends AbstractPersistable<Long> {
+public class Fancy extends AbstractPersistable<Long> {
     
-    private String content;
-    private Integer likes;
-    private LocalDateTime date;
-
     @ManyToOne
-    private Account op;
+    private Post likedpost;
     
-    @OneToMany(mappedBy = "post")
-    private List<Comment> comments = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "likedpost")
-    private List<Fancy> likeslist = new ArrayList<>();
-    
-//    @OneToMany(mappedBy = "posessor")
-//    private List<Skill> skills = new ArrayList<>();
-    
-    
+    @ManyToOne
+    private Account liker;
     
 }
